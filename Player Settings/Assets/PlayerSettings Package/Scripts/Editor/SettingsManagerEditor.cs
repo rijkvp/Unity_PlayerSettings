@@ -76,7 +76,7 @@ namespace PlayerSettings
 
                             playerSettings.settings[i].Value = (EditorGUILayout.FloatField(parsedValue3)).ToString();
                             break;
-                        case SettingType.KeyCode:
+                        case SettingType.Button:
                             KeyCode parsedValue4;
                             if (!Enum.TryParse(playerSettings.settings[i].Value, true, out parsedValue4))
                             {

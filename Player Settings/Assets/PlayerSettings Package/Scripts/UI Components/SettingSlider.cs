@@ -27,7 +27,7 @@ namespace PlayerSettings
                     break;
                 case SettingType.Int:
                     break;
-                case SettingType.KeyCode:
+                case SettingType.Button:
                     Debug.LogError("KeyCode type is not supported for Sliders! Use a Button & SettingKey instead.");
                     break;
                 case SettingType.String:

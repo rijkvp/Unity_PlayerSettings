@@ -47,9 +47,9 @@ namespace PlayerSettings
         }
         private void Start()
         {
-            ApplyVideoSettings();
+            LoadVideoSettings();
         }
-        public void ApplyVideoSettings()
+        public void LoadVideoSettings()
         {
             bool fullScreen = SettingsManager.instance.GetBool(fullscreenKey);
             Screen.fullScreen = fullScreen; 

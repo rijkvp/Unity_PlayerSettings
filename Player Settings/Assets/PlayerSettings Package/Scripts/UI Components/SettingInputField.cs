@@ -28,7 +28,7 @@ namespace PlayerSettings
                 case SettingType.Int:
                     inputField.contentType = InputField.ContentType.IntegerNumber;
                     break;
-                case SettingType.KeyCode:
+                case SettingType.Button:
                     Debug.LogError("KeyCode type is not supported for InputFields! Use a Button & SettingKey instead.");
                     break;
                 case SettingType.String:

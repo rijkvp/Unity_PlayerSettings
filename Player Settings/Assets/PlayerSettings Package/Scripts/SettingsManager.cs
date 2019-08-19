@@ -6,7 +6,7 @@ using System.IO;
 
 namespace PlayerSettings
 {
-    public enum SettingType { String, Int, Float, Bool, KeyCode }
+    public enum SettingType { String, Int, Float, Bool, Button }
 
     [System.Serializable]
     public class SettingItem
@@ -88,7 +88,13 @@ namespace PlayerSettings
             saveData.Save(path);
 
             if (VideoSettingsManager.instance)
-                VideoSettingsManager.instance.ApplyVideoSettings();
+                VideoSettingsManager.instance.LoadVideoSettings();
+
+            if (AudioManager.instance)
+                AudioManager.LoadAudioSettings();
+
+            if (InputManager.instance)
+                InputManager.LoadInputSettings();
         }
 
         #endregion
@@ -123,14 +129,14 @@ namespace PlayerSettings
                     if (type != item.Type)
                     {
                         Debug.LogError("The types " + item.Type.ToString() + " and " + type.ToString() +" of the setting key " + key +" are not the same!");
-                        return "TYPE ERROR";
+                        return "ERROR";
                     }
                     return item.Value;
                 }
             }
 
             Debug.LogError("The setting key '" + key + "' doesn't exists!");
-            return "KEY ERROR";
+            return "ERROR";
         }
 
         #endregion

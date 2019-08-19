@@ -5,11 +5,14 @@ using UnityEngine.UI;
 namespace PlayerSettings
 {
     [RequireComponent(typeof(Button))]
-    public class SettingKey : MonoBehaviour
+    public class SettingButton : MonoBehaviour
     {
-        public string key = "";
+        public string button = "";
+        public string recordingText = "[RECORDING]";
+
         private Text buttonText;
         private bool recording;
+
         void Start()
         {
             Button button = GetComponent<Button>();
@@ -22,13 +25,13 @@ namespace PlayerSettings
         }
         public void Load()
         {
-            buttonText.text = SettingsManager.instance.GetSetting(key, SettingType.KeyCode);
+            buttonText.text = SettingsManager.instance.GetSetting(button, SettingType.Button);
         }
         public void OnClick()
         {
             if (!recording)
             {
-                buttonText.text = "[Recording]";
+                buttonText.text = recordingText;
                 recording = true;
             }
         }
@@ -42,7 +45,7 @@ namespace PlayerSettings
                     {
                         recording = false;
                         buttonText.text = keyCode.ToString();
-                        SettingsManager.instance.SetSetting(key, SettingType.KeyCode, keyCode.ToString());
+                        SettingsManager.instance.SetSetting(button, SettingType.Button, keyCode.ToString());
                     }
                 }
             }
