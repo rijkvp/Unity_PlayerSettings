@@ -70,13 +70,13 @@ namespace PlayerSettings
 
         public void LoadVideoSettings()
         {
-            bool fullScreen = SettingsManager.instance.GetBool(fullscreenKey);
+            bool fullScreen = SettingsManager.GetBool(fullscreenKey);
             Screen.fullScreen = fullScreen; 
-            QualitySettings.SetQualityLevel(SettingsManager.instance.GetInt(qualityLevelKey));
-            Resolution resolution = Screen.resolutions[SettingsManager.instance.GetInt(resolutionLevelKey)];
+            QualitySettings.SetQualityLevel(SettingsManager.GetInt(qualityLevelKey));
+            Resolution resolution = Screen.resolutions[SettingsManager.GetInt(resolutionLevelKey)];
             Screen.SetResolution(resolution.width, resolution.height, fullScreen);
-            QualitySettings.vSyncCount = SettingsManager.instance.GetInt(vsyncCountKey);
-            int aaLevel = SettingsManager.instance.GetInt(aaLevelKey);
+            QualitySettings.vSyncCount = SettingsManager.GetInt(vsyncCountKey);
+            int aaLevel = SettingsManager.GetInt(aaLevelKey);
             int actualAA = 0;
             switch (aaLevel)
             {

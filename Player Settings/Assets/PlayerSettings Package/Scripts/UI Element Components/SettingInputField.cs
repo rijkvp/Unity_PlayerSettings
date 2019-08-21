@@ -4,18 +4,17 @@ using UnityEngine.UI;
 namespace PlayerSettings
 {
     [RequireComponent(typeof(InputField))]
-    public class SettingInputField : MonoBehaviour
+    public class SettingInputField : MonoBehaviour, ISettingUIElement
     {
         public string key = "";
         public SettingType type = SettingType.String;
 
-        void Start()
+        void Awake()
         {
             InputField inputField = GetComponent<InputField>();
+            inputField.onEndEdit.AddListener(delegate { OnEndEdit(inputField.text); });
 
-            inputField.onEndEdit.AddListener(delegate { SetSetting(inputField.text); });
-
-            Load();
+            SettingsManager.RegisterUIElement(this);
 
             switch (type)
             {
@@ -39,16 +38,21 @@ namespace PlayerSettings
             }
         }
 
-        public void Load()
+        void OnEnable()
         {
-            GetComponent<InputField>().text = SettingsManager.instance.GetSetting(key, type);
+            Load();
         }
 
-        public void SetSetting(string input)
+        public void Load()
+        {
+            GetComponent<InputField>().text = SettingsManager.GetSetting(key, type);
+        }
+
+        public void OnEndEdit(string input)
         {
             if (key != "" && key != null && input != null && input != "")
             {
-                SettingsManager.instance.SetSetting(key, type, input);
+                SettingsManager.SetSetting(key, type, input);
             }
         }
     }

@@ -8,9 +8,18 @@ using UnityEditor.SceneManagement;
 
 namespace PlayerSettings
 {
+
     [CustomEditor(typeof(SettingsManager))]
     public class SettingsManagerEditor : Editor
     {
+        const float KEY_WIDTH = 130;
+        const float TYPE_WIDTH = 50;
+        const float VALUE_WIDTH = 60;
+        const float SMALL_BUTTON_WIDTH = 20;
+        const float SPACING_WIDTH = 14;
+        const float TOTAL_WIDTH = KEY_WIDTH + TYPE_WIDTH + VALUE_WIDTH + (3 * SMALL_BUTTON_WIDTH) + SPACING_WIDTH;
+        const float HALF_WIDTH = TOTAL_WIDTH / 2;
+
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -20,27 +29,35 @@ namespace PlayerSettings
             if (playerSettings.settings == null)
                 playerSettings.settings = new List<SettingItem>();
 
-            if (EditorApplication.isPlaying)
-                EditorGUILayout.LabelField("[PLAY MODE] Settings (Key/Type/Value)", EditorStyles.boldLabel);
-            else
-            {
-                EditorGUILayout.LabelField("Settings (Key/Type/DefaultValue)", EditorStyles.boldLabel);
-            }
 
 
+            EditorGUILayout.BeginHorizontal();
+
+            EditorGUILayout.LabelField("KEY", EditorStyles.boldLabel, GUILayout.Width(KEY_WIDTH));
+            EditorGUILayout.LabelField("TYPE", EditorStyles.boldLabel, GUILayout.Width(TYPE_WIDTH));
+            EditorGUILayout.LabelField("VALUE", EditorStyles.boldLabel, GUILayout.Width(VALUE_WIDTH));
+
+            EditorGUILayout.EndHorizontal();
+            
             for (int i = 0; i < playerSettings.settings.Count; i++)
             {
                 GUILayout.BeginHorizontal();
 
                 if (EditorApplication.isPlaying)
                 {
-                    EditorGUILayout.LabelField(playerSettings.settings[i].Key + "      " + playerSettings.settings[i].Type.ToString() + "     " + playerSettings.settings[i].Value);
+                    EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.LabelField(playerSettings.settings[i].Key, GUILayout.Width(KEY_WIDTH));
+                    EditorGUILayout.LabelField(playerSettings.settings[i].Type.ToString(), GUILayout.Width(TYPE_WIDTH));
+                    EditorGUILayout.LabelField(playerSettings.settings[i].Value, GUILayout.Width(VALUE_WIDTH));
+
+                    EditorGUILayout.EndHorizontal();
                 }
                 else
                 {
-                    playerSettings.settings[i].Key = EditorGUILayout.TextField(playerSettings.settings[i].Key);
+                    playerSettings.settings[i].Key = EditorGUILayout.TextField(playerSettings.settings[i].Key, GUILayout.Width(KEY_WIDTH));
 
-                    playerSettings.settings[i].Type = (SettingType)EditorGUILayout.EnumPopup(playerSettings.settings[i].Type);
+                    playerSettings.settings[i].Type = (SettingType)EditorGUILayout.EnumPopup(playerSettings.settings[i].Type, GUILayout.Width(TYPE_WIDTH));
 
                     switch (playerSettings.settings[i].Type)
                     {
@@ -53,7 +70,7 @@ namespace PlayerSettings
                                 playerSettings.settings[i].Value = false.ToString();
                             }
 
-                            playerSettings.settings[i].Value = (EditorGUILayout.Toggle(parsedValue)).ToString();
+                            playerSettings.settings[i].Value = (EditorGUILayout.Toggle(parsedValue, GUILayout.Width(VALUE_WIDTH))).ToString();
                             break;
                         case SettingType.Int:
                             int parsedValue2;
@@ -62,10 +79,10 @@ namespace PlayerSettings
                                 playerSettings.settings[i].Value = 0.ToString();
                             }
 
-                            playerSettings.settings[i].Value = (EditorGUILayout.IntField(parsedValue2)).ToString();
+                            playerSettings.settings[i].Value = (EditorGUILayout.IntField(parsedValue2, GUILayout.Width(VALUE_WIDTH))).ToString();
                             break;
                         case SettingType.String:
-                            playerSettings.settings[i].Value = EditorGUILayout.TextField(playerSettings.settings[i].Value);
+                            playerSettings.settings[i].Value = EditorGUILayout.TextField(playerSettings.settings[i].Value, GUILayout.Width(VALUE_WIDTH));
                             break;
                         case SettingType.Float:
                             float parsedValue3;
@@ -74,7 +91,7 @@ namespace PlayerSettings
                                 playerSettings.settings[i].Value = 0.0f.ToString();
                             }
 
-                            playerSettings.settings[i].Value = (EditorGUILayout.FloatField(parsedValue3)).ToString();
+                            playerSettings.settings[i].Value = (EditorGUILayout.FloatField(parsedValue3, GUILayout.Width(VALUE_WIDTH))).ToString();
                             break;
                         case SettingType.Button:
                             KeyCode parsedValue4;
@@ -83,14 +100,28 @@ namespace PlayerSettings
                                 playerSettings.settings[i].Value = KeyCode.None.ToString();
                             }
 
-                            playerSettings.settings[i].Value = ((KeyCode)EditorGUILayout.EnumPopup(parsedValue4)).ToString();
+                            playerSettings.settings[i].Value = ((KeyCode)EditorGUILayout.EnumPopup(parsedValue4, GUILayout.Width(VALUE_WIDTH))).ToString();
                             break;
                         default:
                             break;
                     }
 
 
-                    if (GUILayout.Button("X"))
+                    if (GUILayout.Button("↑", GUILayout.Width(SMALL_BUTTON_WIDTH)))
+                    {
+                        var item = playerSettings.settings[i];
+                        playerSettings.settings.RemoveAt(i);
+                        playerSettings.settings.Insert(i - 1, item);
+                    }
+
+                    if (GUILayout.Button("↓", GUILayout.Width(SMALL_BUTTON_WIDTH)))
+                    {
+                        var item = playerSettings.settings[i];
+                        playerSettings.settings.RemoveAt(i);
+                        playerSettings.settings.Insert(i + 1, item);
+                    }
+
+                    if (GUILayout.Button("X", GUILayout.Width(SMALL_BUTTON_WIDTH)))
                     {
                         playerSettings.settings.RemoveAt(i);
                     }
@@ -100,24 +131,24 @@ namespace PlayerSettings
             if (!EditorApplication.isPlaying)
             {
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("ADD"))
+                if (GUILayout.Button("ADD", GUILayout.Width(HALF_WIDTH)))
                 {
                     playerSettings.settings.Add(new SettingItem());
                 }
-                if (GUILayout.Button("CLEAR ALL"))
+                if (GUILayout.Button("CLEAR ALL", GUILayout.Width(HALF_WIDTH)))
                 {
                     playerSettings.settings.Clear();
                 }
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("SAVE"))
+                if (GUILayout.Button("SAVE", GUILayout.Width(HALF_WIDTH)))
                 {
-                    playerSettings.Save();
+                    playerSettings.SaveSettingsEditor();
                 }
-                if (GUILayout.Button("LOAD"))
+                if (GUILayout.Button("LOAD", GUILayout.Width(HALF_WIDTH)))
                 {
-                    playerSettings.Load();
+                    playerSettings.LoadSettingsEditor();
                 }
                 GUILayout.EndHorizontal();
             }

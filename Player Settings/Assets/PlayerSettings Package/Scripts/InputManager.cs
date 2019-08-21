@@ -44,14 +44,14 @@ namespace PlayerSettings
 
         public static void LoadInputSettings()
         {
-            forwardKeyCode = SettingsManager.instance.GetKeyCode(instance.forwardSettingKey);
-            backwardKeyCode = SettingsManager.instance.GetKeyCode(instance.backwardSettingKey);
-            rightKeyCode = SettingsManager.instance.GetKeyCode(instance.rightSettingKey);
-            leftKeyCode = SettingsManager.instance.GetKeyCode(instance.leftSettingKey);
-            jumpKeyCode = SettingsManager.instance.GetKeyCode(instance.jumpSettingKey);
+            forwardKeyCode = SettingsManager.GetKeyCode(instance.forwardSettingKey);
+            backwardKeyCode = SettingsManager.GetKeyCode(instance.backwardSettingKey);
+            rightKeyCode = SettingsManager.GetKeyCode(instance.rightSettingKey);
+            leftKeyCode = SettingsManager.GetKeyCode(instance.leftSettingKey);
+            jumpKeyCode = SettingsManager.GetKeyCode(instance.jumpSettingKey);
 
-            sensitivity = SettingsManager.instance.GetFloat(instance.sensitivitySettingKey);
-            zoomSensitivity = SettingsManager.instance.GetFloat(instance.zoomSensitivityKey);
+            sensitivity = SettingsManager.GetFloat(instance.sensitivitySettingKey);
+            zoomSensitivity = SettingsManager.GetFloat(instance.zoomSensitivityKey);
         }
 
         public static bool GetJumpButtonDown()

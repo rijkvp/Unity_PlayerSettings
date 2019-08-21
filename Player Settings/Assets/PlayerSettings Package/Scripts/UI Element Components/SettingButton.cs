@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace PlayerSettings
 {
     [RequireComponent(typeof(Button))]
-    public class SettingButton : MonoBehaviour
+    public class SettingButton : MonoBehaviour, ISettingUIElement
     {
         public string button = "";
         public string recordingText = "[RECORDING]";
@@ -13,20 +13,25 @@ namespace PlayerSettings
         private Text buttonText;
         private bool recording;
 
-        void Start()
+        void Awake()
         {
             Button button = GetComponent<Button>();
-
             buttonText = button.transform.GetChild(0).gameObject.GetComponent<Text>();
-
             button.onClick.AddListener(delegate { OnClick(); });
 
+            SettingsManager.RegisterUIElement(this);
+        }
+
+        void OnEnable()
+        {
             Load();
         }
+
         public void Load()
         {
-            buttonText.text = SettingsManager.instance.GetSetting(button, SettingType.Button);
+            buttonText.text = SettingsManager.GetSetting(button, SettingType.Button);
         }
+
         public void OnClick()
         {
             if (!recording)
@@ -35,6 +40,7 @@ namespace PlayerSettings
                 recording = true;
             }
         }
+
         void Update()
         {
             if (recording)
@@ -45,7 +51,7 @@ namespace PlayerSettings
                     {
                         recording = false;
                         buttonText.text = keyCode.ToString();
-                        SettingsManager.instance.SetSetting(button, SettingType.Button, keyCode.ToString());
+                        SettingsManager.SetSetting(button, SettingType.Button, keyCode.ToString());
                     }
                 }
             }

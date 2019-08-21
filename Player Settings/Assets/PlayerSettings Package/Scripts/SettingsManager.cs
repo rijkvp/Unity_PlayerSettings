@@ -3,9 +3,16 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
+using System;
 
 namespace PlayerSettings
 {
+    // Interface for all UI element setting components
+    public interface ISettingUIElement
+    {
+        void Load();
+    }
+
     public enum SettingType { String, Int, Float, Bool, Button }
 
     [System.Serializable]
@@ -21,6 +28,7 @@ namespace PlayerSettings
     {
         [XmlArray("settings"), XmlArrayItem("setting")]
         public List<SettingItem> settings = new List<SettingItem>();
+
         public void Save(string path)
         {
             var serializer = new XmlSerializer(typeof(SettingsContainer));
@@ -33,9 +41,24 @@ namespace PlayerSettings
         public static SettingsContainer Load(string path)
         {
             var serializer = new XmlSerializer(typeof(SettingsContainer));
-            using (var stream = new FileStream(path, FileMode.Open))
+
+            try
             {
-                return serializer.Deserialize(stream) as SettingsContainer;
+                using (var stream = new FileStream(path, FileMode.Open))
+                {
+                    return serializer.Deserialize(stream) as SettingsContainer;
+                }
+            }
+            catch(FileNotFoundException exception)
+            {
+                Debug.Log(exception.FileName + " was not found! Saving settings for the first time..");
+                SettingsManager.Save();                
+                return Load(path);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("ERROR While loading playersettings: " + e.Message);
+                return null;
             }
         }
 
@@ -48,20 +71,15 @@ namespace PlayerSettings
 
     public class SettingsManager : MonoBehaviour
     {
-        #region Variables
-        [HideInInspector] public List<SettingItem> settings;
-        public static SettingsManager instance;
-        private const string FILE_NAME = "playersettings.xml";
-        #endregion
+        [HideInInspector] public List<SettingItem> settings = new List<SettingItem>();
 
-        #region UI Save/Load
+        private static SettingsManager instance;
+
+        private const string FILE_NAME = "playersettings.xml";
+
+        private List<ISettingUIElement> uiElements = new List<ISettingUIElement>();
 
         void Awake()
-        {
-            Setup();
-        }
-
-        void Setup()
         {
             if (instance == null)
                 instance = this;
@@ -70,17 +88,47 @@ namespace PlayerSettings
                 Debug.LogError("More then one instance of PlayerSettings!");
                 Destroy(this);
             }
-            Load();
         }
 
-        public void Load()
+        void Start()
+        {
+            LoadSettings();    
+        }
+
+        public static void RegisterUIElement(ISettingUIElement element)
+        {
+            if (instance)
+                instance.uiElements.Add(element);
+            else
+                Debug.LogError("There is no instance of SettingsManager created yet! " +
+                    "Make sure to set the SettingsManager at the top of the execution order! (before the default time)");
+        }
+
+        public static void Load()
+        {
+            instance.LoadSettings();
+        }
+
+        public static void Save()
+        {
+            instance.SaveSettings();
+        }
+
+
+        public void LoadSettings()
         {
             string path = Application.persistentDataPath + "/" + FILE_NAME;
             SettingsContainer loadData = SettingsContainer.Load(path);
             settings = loadData.settings;
+
+            // Display on the UI
+            foreach(var element in uiElements)
+            {
+                element.Load();
+            }
         }
 
-        public void Save()
+        public void SaveSettings()
         {
             string path = Application.persistentDataPath + "/" + FILE_NAME;
             SettingsContainer saveData = new SettingsContainer();
@@ -97,13 +145,24 @@ namespace PlayerSettings
                 InputManager.LoadInputSettings();
         }
 
-        #endregion
-
-        #region  UI Get/Set Setting
-
-        public void SetSetting(string key, SettingType type, string value)
+        public void LoadSettingsEditor()
         {
-            foreach (var item in settings)
+            string path = Application.persistentDataPath + "/" + FILE_NAME;
+            SettingsContainer loadData = SettingsContainer.Load(path);
+            settings = loadData.settings;
+        }
+
+        public void SaveSettingsEditor()
+        {
+            string path = Application.persistentDataPath + "/" + FILE_NAME;
+            SettingsContainer saveData = new SettingsContainer();
+            saveData.settings = settings;
+            saveData.Save(path);
+        }
+
+        public static void SetSetting(string key, SettingType type, string value)
+        {
+            foreach (var item in instance.settings)
             {
                 if (key == item.Key)
                 {
@@ -120,9 +179,9 @@ namespace PlayerSettings
             Debug.LogError("The setting key '" + key + "' doesn't exists!");
         }
 
-        public string GetSetting(string key, SettingType type)
+        public static string GetSetting(string key, SettingType type)
         {
-            foreach (var item in settings)
+            foreach (var item in instance.settings)
             {
                 if (key == item.Key)
                 {
@@ -139,13 +198,11 @@ namespace PlayerSettings
             return "ERROR";
         }
 
-        #endregion
 
-        #region Getters
 
-        private string GetSettingStr(string key)
+        private static string GetSettingStr(string key)
         {
-            foreach (var item in settings)
+            foreach (var item in instance.settings)
             {
                 if (key == item.Key)
                 {
@@ -155,7 +212,8 @@ namespace PlayerSettings
             Debug.LogError("The key '" + key + "' does not exists! \n Make sure they are added to the player settings and don't forget to save them!");
             return null;
         }
-        public KeyCode GetKeyCode(string key)
+
+        public static KeyCode GetKeyCode(string key)
         {
             string str = GetSettingStr(key);
             if (str == null)
@@ -170,7 +228,7 @@ namespace PlayerSettings
             return output;
         }
 
-        public float GetFloat(string key)
+        public static float GetFloat(string key)
         {
             string str = GetSettingStr(key);
             if (str == null)
@@ -184,7 +242,8 @@ namespace PlayerSettings
             }
             return output;
         }
-        public int GetInt(string key)
+
+        public static int GetInt(string key)
         {
             string str = GetSettingStr(key);
             if (str == null)
@@ -198,7 +257,8 @@ namespace PlayerSettings
             }
             return output;
         }
-        public bool GetBool(string key)
+
+        public static bool GetBool(string key)
         {
             string str = GetSettingStr(key);
             if (str == null)
@@ -212,7 +272,8 @@ namespace PlayerSettings
             }
             return output;
         }
-        public string GetString(string key)
+
+        public static string GetString(string key)
         {
             string str = GetSettingStr(key);
             if (str == null)
@@ -220,7 +281,5 @@ namespace PlayerSettings
 
             return str;
         }
-        
-        #endregion
     }
 }

@@ -34,7 +34,7 @@ namespace PlayerSettings
 
         public static void LoadAudioSettings()
         {
-            volume = SettingsManager.instance.GetInt(instance.volumeKey);
+            volume = SettingsManager.GetInt(instance.volumeKey);
 
             float actualVolume = volume - 80;
             instance.audioMixer.SetFloat(instance.audioMixerVolumeKey, actualVolume);

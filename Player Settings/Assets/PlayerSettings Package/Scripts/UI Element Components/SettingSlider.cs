@@ -5,18 +5,17 @@ using System;
 namespace PlayerSettings
 {
     [RequireComponent(typeof(Slider))]
-    public class SettingSlider : MonoBehaviour
+    public class SettingSlider : MonoBehaviour, ISettingUIElement
     {
         public string key = "";
         public SettingType type = SettingType.Float;
 
-        void Start()
+        void Awake()
         {
             Slider slider = GetComponent<Slider>();
+            slider.onValueChanged.AddListener(delegate { OnValueChanged(slider.value); });
 
-            slider.onValueChanged.AddListener(delegate { SetSetting(slider.value); });
-
-            Load();
+            SettingsManager.RegisterUIElement(this);
 
             switch (type)
             {
@@ -38,30 +37,35 @@ namespace PlayerSettings
             }
         }
 
+        void OnEnable()
+        {
+            Load();
+        }
+
         public void Load()
         {
             if (type == SettingType.Int)
             {
-                int intValue = Convert.ToInt32(SettingsManager.instance.GetSetting(key, type));
+                int intValue = Convert.ToInt32(SettingsManager.GetSetting(key, type));
                 float floatValue = (float)intValue * 0.01f;
                 GetComponent<Slider>().value = floatValue;
             }
             else if (type == SettingType.Float)
             {
-                GetComponent<Slider>().value = Convert.ToSingle(SettingsManager.instance.GetSetting(key, type));
+                GetComponent<Slider>().value = Convert.ToSingle(SettingsManager.GetSetting(key, type));
             }
         }
 
-        public void SetSetting(float value)
+        public void OnValueChanged(float value)
         {
             if (type == SettingType.Float)
             {
-                SettingsManager.instance.SetSetting(key, type, value.ToString());
+                SettingsManager.SetSetting(key, type, value.ToString());
             }
             else if (type == SettingType.Int)
             {
                 int intValue = (int)(value * 100.0f);
-                SettingsManager.instance.SetSetting(key, type, intValue.ToString());
+                SettingsManager.SetSetting(key, type, intValue.ToString());
             }
         }
     }
