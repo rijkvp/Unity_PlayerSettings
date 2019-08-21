@@ -1,3 +1,0 @@
-- Add custom video settings
-- Complete video settings camera
-- Make video settings work when builded

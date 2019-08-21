@@ -76,6 +76,10 @@ namespace PlayerSettings
             Resolution resolution = Screen.resolutions[SettingsManager.GetInt(resolutionLevelKey)];
             Screen.SetResolution(resolution.width, resolution.height, fullScreen);
             QualitySettings.vSyncCount = SettingsManager.GetInt(vsyncCountKey);
+            if (QualitySettings.vSyncCount == 0)
+            {
+                Application.targetFrameRate = int.MaxValue;
+            }
             int aaLevel = SettingsManager.GetInt(aaLevelKey);
             int actualAA = 0;
             switch (aaLevel)
