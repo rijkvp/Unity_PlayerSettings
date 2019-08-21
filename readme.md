@@ -1,5 +1,5 @@
 # PlayerSettings
-Tool to save & load in-game settings for Unity.
+Tool to save & load in-game settings for Unity
 
 ## Pictures
 ![General](/Pics/general.jpg)
@@ -10,8 +10,8 @@ Tool to save & load in-game settings for Unity.
 
 ## Features
 - Demo 
-- Saving & Loading settings to XML (Text, numbers & buttons)
-- UI components (Text fields, buttons, sliders, dropdowns & checkboxes)
+- Saving & loading settings to a XML file
+- UI prefabs with components to automaticcly save when changed
 - Videosettings 
 - Inputmanager 
 - Audiomanager 
@@ -22,4 +22,4 @@ Get a setting: ```SettingsManager.GetString("username")```
 Get the movement input vector: ```InputManager.GetMovementVector()```
 
 ## Download
-Download the .unitypackage form the github [realeases](https://github.com/Rijk-van-Putten/Unity_PlayerSettings/releases) page.
+Download the .unitypackage form the github [realeases](https://github.com/Rijk-van-Putten/Unity_PlayerSettings/releases) page
